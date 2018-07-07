@@ -40,29 +40,7 @@ def dealWithPageNumbers(string):
         return string
 
 
-def latexifyDefinitions(df):
-
-    defContents = ''
-
-    for item in df.index:  # go through entire definitions table
-        if re.search('D', df['Type'][item]):  # if type is definition
-
-            title = df['Title'][item]
-            page = df['Page'][item]
-            text = df['Text'][item]
-
-            # append title, highlighted text to contents
-            if title:
-                defContents = defContents + "\\textbf{" + cleanUpText(title) + "}: "
-
-            if text:
-                defContents = defContents + (cleanUpText(text) +
-                                             " (p. %s)." % dealWithPageNumbers(page) + "\\\\\n\n")
-
-    return defContents
-
-
-def findObjAns(df, parentName, index, contents, indent):
+def buildDiscussionStructure(df, parentName, index, contents, indent):
 
     tempIter = [i for i in df.index if (i > index)]
     counter = 1
@@ -107,47 +85,58 @@ def findObjAns(df, parentName, index, contents, indent):
             if childText:
                 contents = contents + (cleanUpText(childText) + " (p. %s)." % dealWithPageNumbers(childPage) + "\\\\\n\n")
 
-            contents = findObjAns(df, childName, k, contents, indent + 1)
+            contents = buildDiscussionStructure(df, childName, k, contents, indent + 1)
             counter += 1
 
     return contents
 
 
-def latexifyOtherAnnotations(df):
+def latexifyAnnotations(df):
 
-    contents = ""
+    contents = ''
+    defContents = ''
 
     for item in df.index:
-        if re.search('S', df['Type'][item]):  # if type is statement
 
-            title = df['Title'][item]
-            page = df['Page'][item]
-            text = df['Text'][item]
-            instructions = df['Instructions'][item]
+        objectType = df['Type'][item]
+        objectTitle = df['Title'][item]
+        objectText = df['Text'][item]
+        objectPage = df['Page'][item]
+        objectInstructions = df['Instructions'][item]
 
-            if re.search('-', instructions):
+        if re.search('D', objectType):  # if object is a definition
+
+            # append title, highlighted text to contents
+            if objectTitle:
+                defContents = defContents + "\\textbf{" + cleanUpText(objectTitle) + "}: "
+
+            if objectText:
+                defContents = defContents + (cleanUpText(objectText) +
+                                             " (p. %s)." % dealWithPageNumbers(objectPage) + "\\\\\n\n")
+
+        elif re.search('S', objectType):  # if object is a statement
+
+            if re.search('-', objectInstructions):
                 preamble = '$\\rightarrow$ '
             else:
                 preamble = ''
 
-            if title:
-                if text:
-                    contents = contents + (preamble + "\\textbf{" + cleanUpText(title) + "}: \n")
+            if objectTitle:
+                if objectText:
+                    contents = contents + preamble + "\\textbf{" + cleanUpText(objectTitle) + "}: \n"
                     preamble = ''
                 else:
-                    contents = contents + (preamble + "\\textbf{" + cleanUpText(title) + "}\\\\\n\n")
-            if text:
-                contents = contents + (preamble + cleanUpText(text) +
-                                       " (p. %s)." % dealWithPageNumbers(page) + "\\\\\n\n")
+                    contents = contents + preamble + "\\textbf{" + cleanUpText(objectTitle) + "}\\\\\n\n"
 
-        elif re.search('L', df['Type'][item]):  # if type is list
+            if objectText:
+                contents = contents + (preamble + cleanUpText(objectText) +
+                                       " (p. %s)." % dealWithPageNumbers(objectPage) + "\\\\\n\n")
 
-            title = df['Title'][item]
-            page = df['Page'][item]
+        elif re.search('L', objectType):  # if object is a list
 
-            if title:
-                contents = contents + ("\\textbf{" + cleanUpText(title) + "}\n\n")
-                firstLetter = title[0]
+            if objectTitle:
+                contents = contents + "\\textbf{" + cleanUpText(objectTitle) + "}\n\n"
+                firstLetter = objectTitle[0]
             else:
                 firstLetter = 'i'
 
@@ -158,68 +147,62 @@ def latexifyOtherAnnotations(df):
 
             for k in tempIter:
 
-                instructions = df['Instructions'][k]
-                annType = df['Type'][k]
-                itemTitle = df['Title'][k]
-                itemText = df['Text'][k]
-                itemPage = df['Page'][k]
+                childInstructions = df['Instructions'][k]
+                childType = df['Type'][k]
+                childTitle = df['Title'][k]
+                childText = df['Text'][k]
+                childPage = df['Page'][k]
 
-                if re.search('%s%d' % (firstLetter.lower(), counter), annType):
+                if re.search('%s%d' % (firstLetter.lower(), counter), childType):
 
-                    if re.search('-', instructions):
+                    if re.search('-', objectInstructions):
                         preamble = '[$\\rightarrow$] '
                     else:
                         preamble = ' '
 
-                    contents = contents + ("\\item" + preamble)
-                    if itemTitle:
+                    contents = contents + "\\item" + preamble
+                    if childTitle:
                         contents = contents + ("\\textbf{" +
-                                               cleanUpText(itemTitle) + "}: ")
+                                               cleanUpText(childTitle) + "}: ")
 
-                    contents = contents + (cleanUpText(itemText) +
-                                           " (p. %s)." % dealWithPageNumbers(itemPage) + "\n")
+                    contents = contents + (cleanUpText(childText) +
+                                           " (p. %s)." % dealWithPageNumbers(childPage) + "\n")
                     counter += 1
 
-                    if re.search('\\.', instructions):
+                    if re.search('\\.', childInstructions):
                         break
 
             contents = contents + ("\\end{itemize}\n\n")
 
-        elif re.search('[QOA]', df['Type'][item]):  # if type is question or objection
+        # if object is an initial question, objection or answer
+        elif re.search('[QOA]', objectType) and not re.search('\\([A-Z][0-9]{0,2}\\)', objectInstructions):
 
-            if not re.search('\\([A-Z][0-9]{0,2}\\)', df['Instructions'][item]):  # if item is a parent
+            indent = 0
 
-                indent = 0
+            if re.search('[OA]', objectType):
+                indent += 1
 
-                parentName = df['Type'][item]
-                parentTitle = df['Title'][item]
-                parentText = df['Text'][item]
-                parentPage = df['Page'][item]
-                parentInstructions = df['Instructions'][item]
+            if re.search('-', objectInstructions):
+                preamble = '$\\rightarrow$ '
+            else:
+                preamble = "\\textbf{(" + cleanUpText(objectType) + ")} "
 
-                if re.search('[OA]', parentName):
-                    indent += 1
+            contents = contents + ("\n\\setlength{\\leftskip}{%dcm}\n\n" % indent)
+            contents = contents + preamble
 
-                if re.search('-', parentInstructions):
-                    preamble = '$\\rightarrow$ '
+            if objectTitle:
+                if objectText and re.search('-', objectInstructions):
+                    contents = contents + ("\\textbf{" + cleanUpText(objectTitle) + "}: ")
+                elif objectText and not re.search('-', objectInstructions):
+                    contents = contents + ("\\textbf{" + cleanUpText(objectTitle) + "}" + "\\\\\n")
                 else:
-                    preamble = "\\textbf{(" + cleanUpText(parentName) + ")} "
+                    contents = contents + ("\\textbf{" + cleanUpText(objectTitle) + "}" + "\\\\\n\n")
 
-                contents = contents + ("\n\\setlength{\\leftskip}{%dcm}\n\n" % indent)
-                contents = contents + preamble
+            if objectText:
+                contents = contents + (cleanUpText(objectText) +
+                                       " (p. %s)." % dealWithPageNumbers(objectPage) + "\\\\\n\n")
 
-                if parentTitle:
-                    if parentText and re.search('-', parentInstructions):
-                        contents = contents + ("\\textbf{" + cleanUpText(parentTitle) + "}: ")
-                    elif parentText and not re.search('-', parentInstructions):
-                        contents = contents + ("\\textbf{" + cleanUpText(parentTitle) + "}" + "\\\\\n")
-                    else:
-                        contents = contents + ("\\textbf{" + cleanUpText(parentTitle) + "}" + "\\\\\n\n")
+            contents = buildDiscussionStructure(df, objectType, item, contents, indent + 1)
+            contents = contents + "\\setlength{\\leftskip}{0cm}\n\n"
 
-                if parentText:
-                    contents = contents + (cleanUpText(parentText) + " (p. %s)." % dealWithPageNumbers(parentPage) + "\\\\\n\n")
-
-                contents = findObjAns(df, parentName, item, contents, indent + 1)
-                contents = contents + "\\setlength{\\leftskip}{0cm}\n\n"
-
-    return contents
+    return contents, defContents
