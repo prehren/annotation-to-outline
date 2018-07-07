@@ -3,7 +3,9 @@ from pylatexenc import latexencode
 
 
 def cleanUpText(string):
+    # clean up text
 
+    cleanedUpText = latexencode.utf8tolatex(string, substitute_bad_chars=True)
     cleanedUpText = re.sub("- ", "", string)
     cleanedUpText = re.sub(r"([><])", r"$\1$", cleanedUpText)
     cleanedUpText = re.sub("([a-z])([A-Z])", r"\1 \2", cleanedUpText)
@@ -49,10 +51,10 @@ def latexifyDefinitions(df):
 
             # append title, highlighted text to contents
             if title:
-                defContents = defContents + "\\textbf{" + cleanUpText(latexencode.utf8tolatex(title, substitute_bad_chars=True)) + "}: "
+                defContents = defContents + "\\textbf{" + cleanUpText(title) + "}: "
 
             if text:
-                defContents = defContents + (cleanUpText(latexencode.utf8tolatex(text, substitute_bad_chars=True)) +
+                defContents = defContents + (cleanUpText(text) +
                                              " (p. %s)." % dealWithPageNumbers(page) + "\\\\\n\n")
 
     return defContents
@@ -88,20 +90,20 @@ def findObjAns(df, parentName, index, contents, indent):
                 preamble = '$\\rightarrow$ '
                 counter -= 1
             else:
-                preamble = "\\textbf{(" + cleanUpText(latexencode.utf8tolatex(childName, substitute_bad_chars=True)) + ")} "
+                preamble = "\\textbf{(" + cleanUpText(childName) + ")} "
 
             contents = contents + preamble
 
             if childTitle:
                 if childText and re.search('-', childInstructions):
-                    contents = contents + ("\\textbf{" + cleanUpText(latexencode.utf8tolatex(childTitle, substitute_bad_chars=True)) + "}: ")
+                    contents = contents + ("\\textbf{" + cleanUpText(childTitle) + "}: ")
                 elif childText and not re.search('-', childInstructions):
-                    contents = contents + ("\\textbf{" + cleanUpText(latexencode.utf8tolatex(childTitle, substitute_bad_chars=True)) + "}" + "\\\\\n")
+                    contents = contents + ("\\textbf{" + cleanUpText(childTitle) + "}" + "\\\\\n")
                 else:
-                    contents = contents + ("\\textbf{" + cleanUpText(latexencode.utf8tolatex(childTitle, substitute_bad_chars=True)) + "}" + "\\\\\n\n")
+                    contents = contents + ("\\textbf{" + cleanUpText(childTitle) + "}" + "\\\\\n\n")
 
             if childText:
-                contents = contents + (cleanUpText(latexencode.utf8tolatex(childText, substitute_bad_chars=True)) + " (p. %s)." % dealWithPageNumbers(childPage) + "\\\\\n\n")
+                contents = contents + (cleanUpText(childText) + " (p. %s)." % dealWithPageNumbers(childPage) + "\\\\\n\n")
 
             contents = findObjAns(df, childName, k, contents, indent + 1)
             counter += 1
@@ -128,12 +130,12 @@ def latexifyOtherAnnotations(df):
 
             if title:
                 if text:
-                    contents = contents + (preamble + "\\textbf{" + cleanUpText(latexencode.utf8tolatex(title, substitute_bad_chars=True)) + "}: \n")
+                    contents = contents + (preamble + "\\textbf{" + cleanUpText(title) + "}: \n")
                     preamble = ''
                 else:
-                    contents = contents + (preamble + "\\textbf{" + cleanUpText(latexencode.utf8tolatex(title, substitute_bad_chars=True)) + "}\\\\\n\n")
+                    contents = contents + (preamble + "\\textbf{" + cleanUpText(title) + "}\\\\\n\n")
             if text:
-                contents = contents + (preamble + cleanUpText(latexencode.utf8tolatex(text, substitute_bad_chars=True)) +
+                contents = contents + (preamble + cleanUpText(text) +
                                        " (p. %s)." % dealWithPageNumbers(page) + "\\\\\n\n")
 
         elif re.search('L', df['Type'][item]):  # if type is list
@@ -142,7 +144,7 @@ def latexifyOtherAnnotations(df):
             page = df['Page'][item]
 
             if title:
-                contents = contents + ("\\textbf{" + cleanUpText(latexencode.utf8tolatex(title, substitute_bad_chars=True)) + "}\n\n")
+                contents = contents + ("\\textbf{" + cleanUpText(title) + "}\n\n")
                 firstLetter = title[0]
             else:
                 firstLetter = 'i'
@@ -170,9 +172,9 @@ def latexifyOtherAnnotations(df):
                     contents = contents + ("\\item" + preamble)
                     if itemTitle:
                         contents = contents + ("\\textbf{" +
-                                               cleanUpText(latexencode.utf8tolatex(itemTitle, substitute_bad_chars=True)) + "}: ")
+                                               cleanUpText(itemTitle) + "}: ")
 
-                    contents = contents + (cleanUpText(latexencode.utf8tolatex(itemText, substitute_bad_chars=True)) +
+                    contents = contents + (cleanUpText(itemText) +
                                            " (p. %s)." % dealWithPageNumbers(itemPage) + "\n")
                     counter += 1
 
@@ -199,21 +201,21 @@ def latexifyOtherAnnotations(df):
                 if re.search('-', parentInstructions):
                     preamble = '$\\rightarrow$ '
                 else:
-                    preamble = "\\textbf{(" + cleanUpText(latexencode.utf8tolatex(parentName, substitute_bad_chars=True)) + ")} "
+                    preamble = "\\textbf{(" + cleanUpText(parentName) + ")} "
 
                 contents = contents + ("\n\\setlength{\\leftskip}{%dcm}\n\n" % indent)
                 contents = contents + preamble
 
                 if parentTitle:
                     if parentText and re.search('-', parentInstructions):
-                        contents = contents + ("\\textbf{" + cleanUpText(latexencode.utf8tolatex(parentTitle, substitute_bad_chars=True)) + "}: ")
+                        contents = contents + ("\\textbf{" + cleanUpText(parentTitle) + "}: ")
                     elif parentText and not re.search('-', parentInstructions):
-                        contents = contents + ("\\textbf{" + cleanUpText(latexencode.utf8tolatex(parentTitle, substitute_bad_chars=True)) + "}" + "\\\\\n")
+                        contents = contents + ("\\textbf{" + cleanUpText(parentTitle) + "}" + "\\\\\n")
                     else:
-                        contents = contents + ("\\textbf{" + cleanUpText(latexencode.utf8tolatex(parentTitle, substitute_bad_chars=True)) + "}" + "\\\\\n\n")
+                        contents = contents + ("\\textbf{" + cleanUpText(parentTitle) + "}" + "\\\\\n\n")
 
                 if parentText:
-                    contents = contents + (cleanUpText(latexencode.utf8tolatex(parentText, substitute_bad_chars=True)) + " (p. %s)." % dealWithPageNumbers(parentPage) + "\\\\\n\n")
+                    contents = contents + (cleanUpText(parentText) + " (p. %s)." % dealWithPageNumbers(parentPage) + "\\\\\n\n")
 
                 contents = findObjAns(df, parentName, item, contents, indent + 1)
                 contents = contents + "\\setlength{\\leftskip}{0cm}\n\n"
