@@ -17,7 +17,6 @@ def main():
 
     df = frame.frameData(highlightText, highlightTextPos, underlineText, underlineTextPos,
                          textBoxText, textBoxTextPos, firstPage, numFirstPage)
-    print(df)
     df.loc[:, 'Page'] = df['Page'].astype('str')  # convert page column to string
     df.loc[:, 'Instructions'] = ''  # append instructions column
     df.loc[:, 'Type'] = ''  # append type column
