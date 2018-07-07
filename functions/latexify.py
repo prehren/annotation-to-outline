@@ -14,26 +14,28 @@ def cleanUpText(string):
 
 
 def dealWithPageNumbers(string):
+    # Format page numbers of objects extending over more than one page
 
-    firstPart = re.match('[0-9]{1,5},', string)
+    firstPart = re.match('[0-9]{1,5},', string)  # first page number
 
     if firstPart:
-        firstPart = firstPart.group(0)[:-1]
-        secondPart = re.search('[0-9]{1,5}$', string).group(0)
-
-        outputNumber = ("%s" % firstPart)
+        outputNumber = firstPart = firstPart.group(0)[:-1]  # regex match object to string
+        lastPart = re.search('[0-9]{1,5}$', string).group(0)  # last page number
 
         for k in range(0, len(firstPart)):
 
-            numberFirstPart = firstPart[k]
-            numberSecondPart = secondPart[k]
+            numFirstPart = firstPart[k]  # k-th digit first page number
+            numlastPart = lastPart[k]  # k-th digit last page number
 
-            if numberFirstPart != numberSecondPart:
-                secondPart = secondPart[k:]
-                outputNumber = ("%s-%s" % (firstPart, secondPart))
+            if numFirstPart != numlastPart:
+
+                lastPart = lastPart[k:]
+                outputNumber = ("%s-%s" % (firstPart, lastPart))
                 break
 
         return outputNumber
+
+    # If only a single page number or no page number is given, return input string
     else:
         return string
 
