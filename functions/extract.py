@@ -55,7 +55,12 @@ def extractData(fileName, numFirstPage, numOfPages):
                                   quad.points[2].y() * pHeight)
                     body = PyQt5.QtCore.QRectF()
                     body.setCoords(*boundaries)
-                    txt = txt + str(page.text(body)) + ' '  # Extract text from current line
+                    
+                    # Extract text from current line
+                    if re.match('\\.', str(page.text(body))[-1:]):
+                        txt = txt + str(page.text(body))[:-1]
+                    else:
+                        txt = txt + str(page.text(body)) + ' '
 
                 if annotation.highlightType() == 0:  # If annotation is a hightlight
 
