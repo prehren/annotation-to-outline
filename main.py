@@ -29,8 +29,8 @@ def main():
         df.loc[item, 'Title'] = frame.extractTitle(ann)
         df.loc[item, 'Type'] = frame.extractType(ann)
 
-    defContents = latexify.latexifyDefinitions(df)
-    otherContents = latexify.latexifyOtherAnnotations(df)
+    # defContents = latexify.latexifyDefinitions(df)
+    otherContents, defContents = latexify.latexifyAnnotations(df)
     titleContents = ("%s (%s)" % (paperTitle, author))
 
     write.writeToLatex(outputFileName, otherContents, defContents, titleContents)
