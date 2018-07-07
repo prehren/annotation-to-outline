@@ -11,32 +11,6 @@ def cleanUpText(string):
     return cleanedUpText
 
 
-def dealWithCommas(df):
-
-    itemsToBeDropped = set([])
-    indexSet = set(df.index)
-
-    for item in indexSet:
-
-        if item in itemsToBeDropped:
-            continue
-
-        elif re.search(',', df['Instructions'][item]):
-
-            tempIter = {i for i in indexSet if (i > item)} - itemsToBeDropped
-
-            for k in tempIter:
-                if not df['Annotation'][k]:
-
-                    df.loc[item, 'Text'] = df.loc[item, 'Text'] + " [...] " + df.loc[k, 'Text']
-                    df.loc[item, 'Page'] = df.loc[item, 'Page'] + ", " + df.loc[k, 'Page']
-                    itemsToBeDropped.add(k)
-                    break
-
-    df = df.drop(itemsToBeDropped)
-    return df
-
-
 def dealWithPageNumbers(string):
 
     firstPart = re.match('[0-9]{1,5},', string)
