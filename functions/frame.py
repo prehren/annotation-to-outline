@@ -128,8 +128,9 @@ def frameData(highlightText, highlightTextPos, underlineText, underlineTextPos,
                     break
 
     textListDF = pd.DataFrame({'Annotation': textList})  # generate dataframe from textList
-
     df = pd.concat([highlightDF[['Page', 'Midpoint', 'Text']], textListDF], axis=1)
+    textBoxDF.loc[:, 'Text'] = ''
+    
     df = pd.concat([df, textBoxDF], sort=True)
     df = df.sort_values(by=['Page', 'Midpoint'])  # sort data in dataframe
     df = df.reset_index(drop=True)  # reindex dataframe
