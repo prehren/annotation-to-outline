@@ -1,5 +1,5 @@
 import sys
-from auto_outline import *
+from functions import *
 
 
 def main():
