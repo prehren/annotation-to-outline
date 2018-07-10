@@ -1,5 +1,31 @@
+#
+# Functions for program auto-outline. Responsible for creating the annotation
+# object table from the data extracted from annotated pdf.
+#
+
 import pandas as pd
 import re
+
+
+def dealWithBreaks(df):
+    # Deal with page breaks and breaks on a single page in highlighted and underlined text
+
+    for item in reversed(df.index):
+        if re.search('#\\.\\.\\.', df['Annotation'][item]):  # if page break
+
+            textToAppend = df['Text'][item]
+            df.loc[item - 1, 'Text'] = df['Text'][item - 1] + textToAppend
+            df.loc[item - 1, 'Page'] = df['Page'][item - 1] + ", " + df['Page'][item]
+            df = df.drop(item)
+
+        elif re.search('#,,,', df['Annotation'][item]):  # if break on a single page
+
+            textToAppend = df['Text'][item]
+            df.loc[item - 1, 'Text'] = df['Text'][item - 1] + " [...] " + textToAppend
+            df.loc[item - 1, 'Page'] = df['Page'][item - 1] + ", " + df['Page'][item]
+            df = df.drop(item)
+
+    return df
 
 
 def extractInstructions(string):
@@ -58,27 +84,6 @@ def extractTitle(string):
     return title
 
 
-def dealWithBreaks(df):
-    # Deal with page breaks and breaks on a single page in highlighted and underlined text
-
-    for item in reversed(df.index):
-        if re.search('#\\.\\.\\.', df['Annotation'][item]):  # if page break
-
-            textToAppend = df['Text'][item]
-            df.loc[item - 1, 'Text'] = df['Text'][item - 1] + textToAppend
-            df.loc[item - 1, 'Page'] = df['Page'][item - 1] + ", " + df['Page'][item]
-            df = df.drop(item)
-
-        elif re.search('#,,,', df['Annotation'][item]):  # if break on a single page
-
-            textToAppend = df['Text'][item]
-            df.loc[item - 1, 'Text'] = df['Text'][item - 1] + " [...] " + textToAppend
-            df.loc[item - 1, 'Page'] = df['Page'][item - 1] + ", " + df['Page'][item]
-            df = df.drop(item)
-
-    return df
-
-
 def frameData(highlightText, highlightTextPos, underlineText, underlineTextPos,
               textBoxText, textBoxTextPos, firstPage, numFirstPage):
     # Generate dataframe from highlighted text and content of textboxes. The latter are matched
@@ -92,7 +97,7 @@ def frameData(highlightText, highlightTextPos, underlineText, underlineTextPos,
     # Generate dataframe with highlighted text
     highlightDF = pd.DataFrame({'Page': pages, 'Text': highlightText,
                                 'Lower': lowerLimit, 'Upper': upperLimit, 'Midpoint': midpoint})
-    highlightDF = highlightDF.sort_values(by=['Page', 'Lower'])  # sort data in dataframe
+    highlightDF = highlightDF.sort_values(by=['Page', 'Midpoint'])  # sort data in dataframe
     highlightDF = highlightDF.reset_index(drop=True)  # reindex dataframe
 
     pages = [(item[0] + firstPage - numFirstPage + 1) for item in textBoxTextPos]  # pages with textboxes
@@ -122,6 +127,7 @@ def frameData(highlightText, highlightTextPos, underlineText, underlineTextPos,
 
                     try:
                         textBoxDF = textBoxDF.drop(l)  # drop row from textbox dataframe
+                        tempTextBoxDF = tempTextBoxDF.drop(l)  # drop row from textbox dataframe of current page
                     except KeyError:
                         print('KEY ERROR at page %d' % pNumber)
 
@@ -129,8 +135,9 @@ def frameData(highlightText, highlightTextPos, underlineText, underlineTextPos,
 
     textListDF = pd.DataFrame({'Annotation': textList})  # generate dataframe from textList
     df = pd.concat([highlightDF[['Page', 'Midpoint', 'Text']], textListDF], axis=1)
+
     textBoxDF.loc[:, 'Text'] = ''
-    
+
     df = pd.concat([df, textBoxDF], sort=True)
     df = df.sort_values(by=['Page', 'Midpoint'])  # sort data in dataframe
     df = df.reset_index(drop=True)  # reindex dataframe
