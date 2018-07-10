@@ -1,3 +1,8 @@
+#
+# Function for program auto-outline. Responsible for writing the
+# LaTex structure to file.
+#
+
 
 def writeToLatex(fileName, outlineContents, defContents, titleContents):
     # Write contents to .tex file
