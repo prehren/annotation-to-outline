@@ -1,3 +1,7 @@
+#
+# Function for program auto-outline. Main function.
+#
+
 import sys
 from functions import *
 
@@ -17,6 +21,10 @@ def main():
 
     df = frame.frameData(highlightText, highlightTextPos, underlineText, underlineTextPos,
                          textBoxText, textBoxTextPos, firstPage, numFirstPage)
+
+    # with pd.option_context('display.max_rows', 100, 'display.max_columns', 100):
+    #     print(df)
+
     df.loc[:, 'Page'] = df['Page'].astype('str')  # convert page column to string
     df.loc[:, 'Instructions'] = ''  # append instructions column
     df.loc[:, 'Type'] = ''  # append type column
@@ -29,7 +37,6 @@ def main():
         df.loc[item, 'Title'] = frame.extractTitle(ann)
         df.loc[item, 'Type'] = frame.extractType(ann)
 
-    # defContents = latexify.latexifyDefinitions(df)
     otherContents, defContents = latexify.latexifyAnnotations(df)
     titleContents = ("%s (%s)" % (paperTitle, author))
 
