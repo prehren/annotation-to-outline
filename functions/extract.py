@@ -1,6 +1,12 @@
+#
+# Function for program auto-outline. Responsible for extracting
+# highlighted text, texboxes and underlines from annotated pdf.
+#
+
 import popplerqt5
 import PyQt5
 import sys
+import re
 
 
 def extractData(fileName, numFirstPage, numOfPages):
@@ -55,7 +61,7 @@ def extractData(fileName, numFirstPage, numOfPages):
                                   quad.points[2].y() * pHeight)
                     body = PyQt5.QtCore.QRectF()
                     body.setCoords(*boundaries)
-                    
+
                     # Extract text from current line
                     if re.match('\\.', str(page.text(body))[-1:]):
                         txt = txt + str(page.text(body))[:-1]
