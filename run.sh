@@ -1,5 +1,12 @@
 #!/bin/bash
 
+#
+# Script for program out-outline. Calls main function of program. Also 
+# handels turning tex-file containing the outline into pdf, 
+# moving that file to the directory from which the script
+# is called and removing excess pdflatex output.
+#
+
 workingDir=`pwd` # working directory
 inputFileName="$workingDir/$1" # input file name
 outputFileName="${BASH_SOURCE%/*}/Summary $4 $3" # output file name
@@ -31,5 +38,6 @@ if [ -f "$outputFileName.tex" ]; then
     cd "$workingDir"
 
     printf "\n\nSucess!\n\n"
+    
 fi
 
