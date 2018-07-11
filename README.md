@@ -25,6 +25,7 @@ To test whether the program itself is working properly, navigate to the test fol
 ```
 python3.5 ../main.py 'test.pdf' 1 'Test outline.tex' 'test' 'author' 1 2
 ```
+
 A LaTex file 'Test outline.tex' should appear in the test folder. To test whether the bash script is working properly, run
 ```
 . ../run.sh 'test.pdf' 1 'test' 'author' 1 2
