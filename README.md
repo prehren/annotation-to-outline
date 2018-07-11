@@ -1,6 +1,6 @@
 # auto-outline
 
-A python program which takes pdf documents annotated in certain way and automatically generates a structured outline of their contents which can then be typeset using LaTex. Useful especially for academic texts. The program comes with a simple bash script to handle typesetting.
+A python program which takes pdf documents annotated in a certain way and automatically generates a structured outline of their contents which can then be typeset using LaTex. Useful especially for academic texts. The program comes with a simple bash script to handle typesetting and shuffeling files around.
 
 ## Getting Started
 
@@ -23,7 +23,7 @@ chmod u+x run.sh
 ```
 ## Author
 
-**Paul Rehren**
+Paul Rehren
 
 ## License
 
