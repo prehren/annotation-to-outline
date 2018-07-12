@@ -23,14 +23,14 @@ chmod u+x run.sh
 ```
 To test whether the program itself is working properly, navigate to the test folder, and then run
 ```
-python3.5 ../main.py 'test.pdf' 1 'Test outline.tex' 'test' 'author' 1 2
+python3.5 ../main.py 'test.pdf' 1 'Summary author test.tex' 'test' 'author' 1 2
 ```
 
-A LaTex file 'Test outline.tex' should appear in the test folder. To test whether the bash script is doing what it is supposed to do, run
+A LaTex file 'Summary author test.tex' should appear in the test folder (for comparison, see the file 'Summary author test comparison.tex'). To test whether the bash script is doing what it is supposed to do, run
 ```
 . ../run.sh 'test.pdf' 1 'test' 'author' 1 2
 ```
-from the same location. Both a LaTex file 'Summary author test.tex' and a pdf 'Summary author test.pdf' should appear there.
+from the same location. Both a LaTex file 'Summary author test.tex' and a pdf 'Summary author test.pdf' should appear there (for comparison, see the files 'Summary author test comparison.tex' and 'Summary author test comparison.pdf').
 
 ## Author
 
