@@ -26,11 +26,11 @@ To test whether the program itself is working properly, navigate to the test fol
 python3.5 ../main.py 'test.pdf' 1 'Test outline.tex' 'test' 'author' 1 2
 ```
 
-A LaTex file 'Test outline.tex' should appear in the test folder. To test whether the bash script is working properly, run
+A LaTex file 'Test outline.tex' should appear in the test folder. To test whether the bash script is doing what it is supposed to do, run
 ```
 . ../run.sh 'test.pdf' 1 'test' 'author' 1 2
 ```
-from the same location. Both a LaTex file 'Summary author test.tex' and a pdf 'Summary author test.pdf' should appear.
+from the same location. Both a LaTex file 'Summary author test.tex' and a pdf 'Summary author test.pdf' should appear there.
 
 ## Author
 
