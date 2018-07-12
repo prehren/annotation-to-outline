@@ -23,7 +23,7 @@ chmod u+x run.sh
 ```
 To test whether the program itself is working properly, navigate to the test folder, and then run
 ```
-python3.5 ../main.py 'test.pdf' 1 'Summary author test.tex' 'test' 'author' 1 2
+python ../main.py 'test.pdf' 1 'Summary author test.tex' 'test' 'author' 1 2
 ```
 
 A LaTex file 'Summary author test.tex' should appear in the test folder (for comparison, see the file 'Summary author test comparison.tex'). To test whether the bash script is doing what it is supposed to do, run
