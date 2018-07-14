@@ -1,5 +1,5 @@
 #
-# Functions for program auto-outline. Responsible for creating the annotation
+# Functions for program annotation-to-outline. Responsible for creating the annotation
 # object table from the data extracted from annotated pdf.
 #
 
