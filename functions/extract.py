@@ -1,5 +1,5 @@
 #
-# Function for program auto-outline. Responsible for extracting
+# Function for program annotation-to-outline. Responsible for extracting
 # highlighted text, texboxes and underlines from annotated pdf.
 #
 
