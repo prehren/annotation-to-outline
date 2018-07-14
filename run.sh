@@ -1,9 +1,9 @@
 #!/bin/bash
 
 #
-# Script for program out-outline. Calls main function of program. Also 
+# Script for program annotation-to-outline. Calls main function of program. Also 
 # handels turning tex-file containing the outline into pdf, 
-# moving that file to the directory from which the script
+# moving that file to the directory from which the script   
 # is called and removing excess pdflatex output.
 #
 
