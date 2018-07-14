@@ -1,5 +1,5 @@
 #
-# Function for program auto-outline. Main function.
+# Function for program annotation-to-outline. Main function.
 #
 
 import sys
