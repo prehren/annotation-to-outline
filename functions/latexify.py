@@ -1,5 +1,5 @@
 #
-# Functions for program auto-outline. Responsible for creating the
+# Functions for program annotation-to-outline. Responsible for creating the
 # LaTex structure out of the contents of the annotation object table.
 #
 
